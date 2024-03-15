@@ -29,7 +29,6 @@
 #include <stdio.h>
 #include "xis.h"
 
-// Function prototype for translateInstruction function
 void translateInstruction(unsigned char opcode, unsigned char operand);
 
 int main(int argc, char **argv) {
@@ -39,15 +38,16 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    for (int i = 0; i < argc; i++) {
-        FILE *inputFile = fopen(argv[i], "rb");
+
+        FILE *inputFile = fopen(argv[1], "rb");
         if (inputFile == NULL) {
-            printf("Input file could not be opened: %s\n", argv[i]);
-            continue;
+            printf("Input file could not be opened: %s\n", argv[1]);
+            return 1;
         }
 
-        unsigned long length;
-        unsigned char opcode, operand; //Storing opcode and operand
+        unsigned short length;
+        unsigned char opcode = 0;
+        unsigned char operand = 0; //Storing opcode and operand
         do {
             //To Read opcode and operand from file
             length = fread(&opcode, 1, 1, inputFile);
@@ -66,7 +66,6 @@ int main(int argc, char **argv) {
         } while (length == 100);
 
         fclose(inputFile);
-    }
 
     return 0;
 }
