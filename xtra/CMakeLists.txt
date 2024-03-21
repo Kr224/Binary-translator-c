@@ -4,4 +4,6 @@ project(xtra C)
 set(CMAKE_C_STANDARD 99)
 
 
-add_executable(xtra main.c xis.h xtra.c)
+add_executable(xtra main.c xis.h
+        xtra.c
+        xtra.c)

@@ -2,7 +2,7 @@
 PROGRAM = xtra
 HEADERS = xis.h
 OBJS = main.o xtra.o
-ADD_OBJS = 
+ADD_OBJS =
 
 # compilers, linkers, utilities, and flags
 CC = gcc

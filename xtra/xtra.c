@@ -3,6 +3,7 @@
 //
 #include <stdio.h>
 #include "xis.h"
+#include <stdbool.h>
 
 ///Function to translate X instruction to x86-64 assembly
 void translateInstruction(FILE *inputFile) {
@@ -12,8 +13,12 @@ void translateInstruction(FILE *inputFile) {
     unsigned short length;
     unsigned int opcode = 0;
     unsigned int registers = 0;
+    bool debug = false;
     do {
         //To Read opcode from file
+        if(debug){
+            printf("  call debug\n");
+        }
         length = fread(&opcode, 1, 1, inputFile);
         if (length == 1) {
             length = fread(&registers, 1, 1, inputFile);
@@ -28,10 +33,12 @@ void translateInstruction(FILE *inputFile) {
                             printf("ret\n");
                             break;
                         case I_CLD:
-                            printf("call debug\n");
+                            debug = false;
+                            //printf("call debug\n");
                             break;
                         case I_STD:
-                            printf("  call debug\n");
+                            debug = true;
+                            //printf("  call debug\n");
                             break;
                         case I_CLI:
                             printf("cli\n");
@@ -158,10 +165,12 @@ void translateInstruction(FILE *inputFile) {
                             fread(&immediateValue, 2, 1, inputFile);
                             break;
                         case I_LOADI:
+
                             printf("  mov ");
                             fread(&immediateValue, 1, 1, inputFile);
                             immediateValue = immediateValue << 8;
                             fread(&immediateValue, 1, 1, inputFile);
+
                             break;
                         default:
                             printf("Unknown instruction ");
@@ -181,6 +190,7 @@ void translateInstruction(FILE *inputFile) {
                 printf("Error reading opcode\n");
                 break;
             }
+
             fflush(stdout);
         }
     } while ((opcode|registers)!= 0);
