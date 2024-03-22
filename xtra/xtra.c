@@ -225,11 +225,9 @@ void translateInstruction(FILE *inputFile) {
                             break;
                         case I_CLD:
                             debug = false;
-                            //printf("call debug\n");
                             break;
                         case I_STD:
                             debug = true;
-                            //printf("  call debug\n");
                             break;
                         case I_CLI:
                             printf("cli\n");
@@ -264,14 +262,20 @@ void translateInstruction(FILE *inputFile) {
                         case I_POP:
                             printf("pop ");
                             break;
-                        case I_OUT:
-                            printf("out ");
-                            break;
                         case I_JMPR:
                             printf("jmpr ");
                             break;
                         case I_CALLR:
                             printf("callr ");
+                            break;
+                        case I_BR:
+                            printf("jne ");
+                            break;
+                        case I_JR:
+                            printf("jr ");
+                            break;
+                        case I_OUT:
+                            printf("call outchar\n");
                             break;
                         case I_CPUID:
                             printf("cpuid ");
@@ -325,20 +329,39 @@ void translateInstruction(FILE *inputFile) {
                             printf("  cmp ");
                             break;
                         case I_EQU:
-                            printf("  je ");
-
+                            printf("  equ ");
                             break;
                         case I_MOV:
                             printf("  mov ");
+                            break;
+                        case I_LOADB:
+                            printf("movzx ");
+                            break;
+                        case I_STORB:
+                            printf("mov ");
                             break;
                         default:
                             printf("Unknown instruction ");
                             break;
                     }
                     // Extract register operands
+                    //opcode = opcode >> 8; //Shift to next byte
                     int reg1 = XIS_REG1(registers);
                     int reg2 = XIS_REG2(registers);
                     printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
+
+                    //Implementing test, cmp, equ
+                    if (opcode == I_TEST || opcode == I_CMP || opcode == I_EQU) {
+                        printf("test %%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
+                        // Set the appropriate condition flags
+                        if (opcode == I_TEST) {
+                            printf("setz %%%s\n", x86_registers[reg1]); // Set ZF if result is zero
+                        } else if (opcode == I_CMP) {
+                            printf("setl %%%s\n", x86_registers[reg1]); // Set SF if result is negative
+                        } else if (opcode == I_EQU) {
+                            printf("sete %%%s\n", x86_registers[reg1]); // Set ZF if result is equal
+                        }
+                    }
 
                 } else if (optype == 0x03) { //extended instructions
                     int thirdBit = opcode & 0x20; //Extract 3rd bit to see if register used
@@ -354,12 +377,16 @@ void translateInstruction(FILE *inputFile) {
                             fread(&immediateValue, 2, 1, inputFile);
                             break;
                         case I_LOADI:
-
                             printf("  mov ");
                             fread(&immediateValue, 1, 1, inputFile);
                             immediateValue = immediateValue << 8;
                             fread(&immediateValue, 1, 1, inputFile);
-
+                            break;
+                        case I_LOADB:
+                            printf("movzx ");
+                            break;
+                        case I_STORB:
+                            printf("mov ");
                             break;
                         default:
                             printf("Unknown instruction ");
@@ -374,15 +401,33 @@ void translateInstruction(FILE *inputFile) {
                         int fourBitsOfSecondByte = (registers & 0xF0) >> 4;
                         printf("$%d, %%%s\n",immediateValue, x86_registers[fourBitsOfSecondByte]); //Register operand
                     }
+
+                    if (opcode == I_JMP || opcode == I_CALL) {
+                        fread(&immediateValue, 2, 1, inputFile);
+                        printf("$%d\n", immediateValue);
+                    }
+                    else if (opcode == I_LOADB || opcode == I_STORB) {
+                        int reg = XIS_REG2(registers);
+                        printf("%%%s, ", x86_registers[reg]);
+                        fread(&immediateValue, 2, 1, inputFile);
+                        printf("%d(%%%s)\n", immediateValue, x86_registers[XIS_REG1(registers)]);
+                    }
+                    else if (opcode == I_OUT) {
+                        int reg = XIS_REG2(registers);
+                        printf("$%d\n", reg);
+                    }
                 }
             } else {
                 printf("Error reading opcode\n");
                 break;
             }
+
             fflush(stdout);
         }
     } while ((opcode|registers)!= 0);
 }
+
+
 
 
 
