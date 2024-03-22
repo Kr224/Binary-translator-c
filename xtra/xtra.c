@@ -235,9 +235,9 @@ void translateInstruction(FILE *inputFile) {
                         case I_STI:
                             printf("sti\n");
                             break;
-                        default:
-                            //printf("Unknown instruction\n");
-                            break;
+//                        default:
+//                            //printf("Unknown instruction\n");
+//                            break;
                     }
 
                 } else if (optype == 0x01) { //1-operand instructions
@@ -283,9 +283,9 @@ void translateInstruction(FILE *inputFile) {
                         case I_CPUNUM:
                             printf("cpunum ");
                             break;
-                        default:
-                            printf("Unknown instruction ");
-                            break;
+//                        default:
+//                            printf("Unknown instruction ");
+//                            break;
                     }
 
                     if (thirdBit == 0) { //If 0 then register
@@ -299,67 +299,76 @@ void translateInstruction(FILE *inputFile) {
                     }
 
                 } else if (optype == 0x02) { //2-operand instructions
+                    int reg1 = XIS_REG1(registers);
+                    int reg2 = XIS_REG2(registers);
 
                     switch (opcode) {  //match instruction with identifier and print
                         case I_ADD:
                             printf("  add ");
+                            printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
                             break;
                         case I_SUB:
                             printf("sub ");
+                            printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
                             break;
                         case I_MUL:
                             printf("  imul ");
+                            printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
                             break;
                         case I_DIV:
                             printf("div ");
+                            printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
                             break;
                         case I_AND:
                             printf("and ");
+                            printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
                             break;
                         case I_OR:
                             printf("or ");
+                            printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
                             break;
                         case I_XOR:
                             printf("xor ");
+                            printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
                             break;
-                        case I_TEST:
-                            printf("  test ");
-                            break;
-                        case I_CMP:
-                            printf("  cmp ");
-                            break;
-                        case I_EQU:
-                            printf("  equ ");
-                            break;
+//                        case I_TEST:
+//                            printf("  test ");
+//                            break;
+//                        case I_CMP:
+//                            printf("  cmp ");
+//                            break;
+//                        case I_EQU:
+//                            printf("  equ ");
+//                            break;
                         case I_MOV:
                             printf("  mov ");
+                            printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
                             break;
                         case I_LOADB:
                             printf("movzx ");
+                            printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
                             break;
                         case I_STORB:
                             printf("mov ");
+                            printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
                             break;
-                        default:
-                            printf("Unknown instruction ");
-                            break;
+//                        default:
+//                            printf("Unknown instruction ");
+//                            break;
                     }
                     // Extract register operands
                     //opcode = opcode >> 8; //Shift to next byte
-                    int reg1 = XIS_REG1(registers);
-                    int reg2 = XIS_REG2(registers);
-                    printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
+
 
                     //Implementing test, cmp, equ
                     if (opcode == I_TEST || opcode == I_CMP || opcode == I_EQU) {
                         printf("test %%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
-                        // Set the appropriate condition flags
                         if (opcode == I_TEST) {
-                            printf("setz %%%s\n", x86_registers[reg1]); // Set ZF if result is zero
+                            printf("setz %%r15b\n", x86_registers[reg1]); // Set ZF if result is zero
                         } else if (opcode == I_CMP) {
-                            printf("setl %%%s\n", x86_registers[reg1]); // Set SF if result is negative
+                            printf("setl %%r15b\n", x86_registers[reg1]); // Set SF if result is negative
                         } else if (opcode == I_EQU) {
-                            printf("sete %%%s\n", x86_registers[reg1]); // Set ZF if result is equal
+                            printf("sete %%r15b\n", x86_registers[reg1]); // Set ZF if result is equal
                         }
                     }
 
@@ -388,9 +397,9 @@ void translateInstruction(FILE *inputFile) {
                         case I_STORB:
                             printf("mov ");
                             break;
-                        default:
-                            printf("Unknown instruction ");
-                            break;
+//                        default:
+//                            printf("Unknown instruction ");
+//                            break;
                     }
 
                     if (thirdBit == 0) { //Immediate value
