@@ -1,14 +1,14 @@
-  std
-  loadi 0, r0
-  loadi 1, r1
-  loadi 2, r2
-  test  r1, r1
-  test  r1, r2
-  cmp   r1, r2
-  cmp   r1, r1
-  cmp   r2, r1
-  equ   r1, r1
-  equ   r1, r2
+  std works
+  loadi 0, r0 works
+  loadi 1, r1 works
+  loadi 2, r2 works
+  test  r1, r1 not right
+  test  r1, r2 not right
+  cmp   r1, r2 not right
+  cmp   r1, r1 works
+  cmp   r2, r1 works
+  equ   r1, r1 -- not right
+  equ   r1, r2 -- not right
 
 .literal 0
 
