@@ -205,11 +205,13 @@ void translateInstruction(FILE *inputFile) {
     unsigned int opcode = 0;
     unsigned int registers = 0;
     bool debug = false;
+    bool conditionFlag = false;
     do {
         //To Read opcode from file
         if (debug) {
             printf("  call debug\n");
         }
+
         length = fread(&opcode, 1, 1, inputFile);
         if (length == 1) {
             length = fread(&registers, 1, 1, inputFile);
@@ -235,13 +237,10 @@ void translateInstruction(FILE *inputFile) {
                         case I_STI:
                             printf("sti\n");
                             break;
-//                        default:
-//                            //printf("Unknown instruction\n");
-//                            break;
                     }
 
                 } else if (optype == 0x01) { //1-operand instructions
-                    int thirdBit = (opcode & 0x20)>>6; //Extract 3rd bit to see if register or immediate value
+                    int thirdBit = (opcode & 0x20) >> 6; //Extract 3rd bit to see if register or immediate value
 
                     switch (opcode) {  //match instruction with identifier and print
                         case I_NEG:
@@ -283,14 +282,11 @@ void translateInstruction(FILE *inputFile) {
                         case I_CPUNUM:
                             printf("cpunum ");
                             break;
-//                        default:
-//                            printf("Unknown instruction ");
-//                            break;
                     }
 
                     if (thirdBit == 0) { //If 0 then register
                         // Extract the four most significant bits of the second byte
-                        int fourBitsOfSecondByte = (registers & 0xF0)>>4;
+                        int fourBitsOfSecondByte = (registers & 0xF0) >> 4;
                         printf("%%%s\n", x86_registers[fourBitsOfSecondByte]); //Register operand
 
                     } else { //If 1 then immediate value
@@ -331,15 +327,6 @@ void translateInstruction(FILE *inputFile) {
                             printf("xor ");
                             printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
                             break;
-//                        case I_TEST:
-//                            printf("  test ");
-//                            break;
-//                        case I_CMP:
-//                            printf("  cmp ");
-//                            break;
-//                        case I_EQU:
-//                            printf("  equ ");
-//                            break;
                         case I_MOV:
                             printf("  mov ");
                             printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
@@ -352,24 +339,18 @@ void translateInstruction(FILE *inputFile) {
                             printf("mov ");
                             printf("%%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
                             break;
-//                        default:
-//                            printf("Unknown instruction ");
-//                            break;
-                    }
-                    // Extract register operands
-                    //opcode = opcode >> 8; //Shift to next byte
-
-
-                    //Implementing test, cmp, equ
-                    if (opcode == I_TEST || opcode == I_CMP || opcode == I_EQU) {
-                        printf("test %%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
-                        if (opcode == I_TEST) {
-                            printf("setz %%r15b\n", x86_registers[reg1]); // Set ZF if result is zero
-                        } else if (opcode == I_CMP) {
-                            printf("setl %%r15b\n", x86_registers[reg1]); // Set SF if result is negative
-                        } else if (opcode == I_EQU) {
-                            printf("sete %%r15b\n", x86_registers[reg1]); // Set ZF if result is equal
-                        }
+                        case I_TEST:
+                            printf("test %%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
+                            printf("setnz %%r15b\n");
+                            break;
+                        case I_CMP:
+                            printf("cmp %%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
+                            printf("setl %%r15b\n");
+                            break;
+                        case I_EQU:
+                            printf("cmp %%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
+                            printf("setz %%r15b\n");
+                            break;
                     }
 
                 } else if (optype == 0x03) { //extended instructions
@@ -397,9 +378,6 @@ void translateInstruction(FILE *inputFile) {
                         case I_STORB:
                             printf("mov ");
                             break;
-//                        default:
-//                            printf("Unknown instruction ");
-//                            break;
                     }
 
                     if (thirdBit == 0) { //Immediate value
