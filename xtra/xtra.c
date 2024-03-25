@@ -345,7 +345,7 @@ void translateInstruction(FILE *inputFile) {
                             break;
                         case I_CMP:
                             printf("cmp %%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
-                            printf("setl %%r15b\n");
+                            printf("setg %%r15b\n");
                             break;
                         case I_EQU:
                             printf("cmp %%%s, %%%s\n", x86_registers[reg1], x86_registers[reg2]);
