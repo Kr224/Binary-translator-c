@@ -22,10 +22,6 @@ int main(int argc, char **argv) {
         printf("Input file could not be opened: %s\n", argv[1]);
         return 1;
     }
-//    char buffer[2];
-//    while(fread(buffer, 1, 2, inputFile)){
-//        printf("0x%.2hhx %.2hhx\n", buffer[0], buffer[1]);
-//    }
     translateInstruction(inputFile);
 
     fclose(inputFile);
